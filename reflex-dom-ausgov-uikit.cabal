@@ -1,0 +1,43 @@
+name:                reflex-dom-ausgov-uikit
+version:             0.1.0.0
+synopsis:            Reflex DOM components for Australian Government Design System
+description:         See https://designsystem.gov.au/components/
+homepage:            http://qfpl.io
+license:             BSD3
+license-file:        LICENSE
+author:              Ben Kolera
+maintainer:          ben.kolera@gmail.com
+copyright:           CSIRO, 2018
+category:            Web
+build-type:          Simple
+extra-source-files:  ChangeLog.md
+cabal-version:       >=1.10
+
+library
+  exposed-modules:   Reflex.DOM.AusGov.UiKit
+  default-language:  Haskell2010
+  hs-source-dirs:    src
+  -- other-modules:
+  build-depends:     base
+                   , clay
+                   , colour
+                   , lens
+                   , reflex-dom
+                   , reflex
+                   , text
+
+-- Deps are duped here because we need to share the source directories to get
+-- good ghcid and dante across all of our code.
+executable demoserver
+  main-is:           Main.hs
+  hs-source-dirs:    demo, src
+  -- other-modules:
+  build-depends:     base
+                   , clay
+                   , colour
+                   , lens
+                   , reflex-dom
+                   , reflex
+                   , text
+
+  default-language:  Haskell2010
