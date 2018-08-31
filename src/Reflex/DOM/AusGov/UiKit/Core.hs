@@ -1,21 +1,13 @@
 {-# LANGUAGE OverloadedStrings #-}
 {-# LANGUAGE TemplateHaskell   #-}
-module Reflex.DOM.AusGov.UiKit
-  ( defaultColourConfig
-  , css
-  ) where
+module Reflex.DOM.AusGov.UiKit.Core where
 
-import Prelude hiding (rem)
+import           Prelude          hiding (rem)
 
-import Clay
-import Control.Lens ((^.), to)
-import Control.Lens.TH (makeLenses)
-import Data.Colour.SRGB (Colour, RGB(RGB), toSRGB24, sRGB24read)
-import Data.Semigroup ((<>))
-
-import Reflex.DOM.AusGov.UiKit.Body (bodyCss)
-
--- TODO: Print CSS
+import           Clay
+import           Control.Lens     (to, (^.), Getter)
+import           Control.Lens.TH  (makeLenses)
+import           Data.Colour.SRGB (Colour, RGB (RGB), sRGB24read, toSRGB24)
 
 data ColourConfig = ColourConfig
   { _colourConfigFgAction     :: Colour Double
@@ -49,8 +41,11 @@ defaultColourConfig = ColourConfig
   , _colourConfigInfo         = sRGB24read "00BFE9"
   }
 
-clayColor :: (RealFrac a, Floating a) => Colour a -> Color
-clayColor c = rgb (fromIntegral r) (fromIntegral g) (fromIntegral b)
+clayColorG :: (RealFrac a, Floating a) => Getter (Colour a) Color
+clayColorG = to toClayColor
+
+toClayColor :: (RealFrac a, Floating a) => Colour a -> Color
+toClayColor c = rgb (fromIntegral r) (fromIntegral g) (fromIntegral b)
   where
     (RGB r g b) = toSRGB24 c
 
@@ -62,30 +57,6 @@ paddingUni s = padding s s s s
 
 borderNone :: Css
 borderNone = borderWidth (px 0)
-
-css :: ColourConfig -> Css
-css c = do
-  bodyCss
-  ".au-skip-link" ? do
-    fontgridMdNospace
-    uncurry fontFamily fontsNormal
-    color (c ^. colourConfigFgText . to clayColor)
-  ".au-skip-link__link" ? do
-      sronly
-      let linkStyle = do
-            clip auto
-            height auto
-            marginUni (px 0)
-            overflow visible
-            position absolute
-            width auto
-            color  (c ^. colourConfigBg . to clayColor)
-            backgroundColor  (c ^. colourConfigFgText . to clayColor)
-            top (rem 1)
-            left (rem 1)
-            paddingUni (rem 1.5)
-      hover & linkStyle
-      focus & linkStyle
 
 fontgrid :: Size LengthUnit -> Size LengthUnit -> Css
 fontgrid fs lh = fontSize fs *> lineHeight lh
