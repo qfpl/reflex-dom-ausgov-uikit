@@ -8,6 +8,7 @@ import           Clay
 import           Control.Lens     (to, (^.), Getter)
 import           Control.Lens.TH  (makeLenses)
 import           Data.Colour.SRGB (Colour, RGB (RGB), sRGB24read, toSRGB24)
+import           Data.Text        (Text)
 
 data ColourConfig = ColourConfig
   { _colourConfigFgAction     :: Colour Double
@@ -72,8 +73,15 @@ sronly = do
   clip (rect (px 0) (px 0) (px 0) (px 0))
   borderNone
 
-fontsNormal = (["-apple-system","BlinkMacSystemFont","Segoe UI","Roboto","Oxygen","Ubuntu","Cantarell","Fira Sans","Droid Sans","Helvetica Neue"],[sansSerif])
-fontsMonospace = (["Lucida Sans Typewriter","Lucida Console","Monaco","Bitstream Vera Sans Mono"],[monospace])
+-- TODO :: Clay doesn't export GenericFontFamily type. Why?
+fontsNormal = (
+  ["-apple-system","BlinkMacSystemFont","Segoe UI","Roboto","Oxygen","Ubuntu","Cantarell","Fira Sans","Droid Sans","Helvetica Neue"] :: [Text],
+  [sansSerif]
+  )
+fontsMonospace = (
+  ["Lucida Sans Typewriter","Lucida Console","Monaco","Bitstream Vera Sans Mono"] :: [Text],
+  [monospace]
+  )
 
 mediaXs = (px 576)
 mediaSm = (px 768)

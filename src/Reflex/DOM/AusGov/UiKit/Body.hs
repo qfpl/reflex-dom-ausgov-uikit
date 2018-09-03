@@ -4,12 +4,15 @@ module Reflex.DOM.AusGov.UiKit.Body where
 import           Prelude                       hiding (rem)
 
 import           Clay
+import           Control.Lens                  (Getter, to, (^.))
 
-import           Reflex.DOM.AusGov.UiKit.Class (CssClass, cssClass,
-                                                toRefinement)
-import           Reflex.DOM.AusGov.UiKit.Core  (ColourConfig, toClayColor,
-                                                colourConfigFgText, fontsNormal)
-
+import           Reflex.DOM.AusGov.UiKit.Class (CssClass, cssClass, toSelector, toRefinement)
+import           Reflex.DOM.AusGov.UiKit.Core  (ColourConfig, clayColorG,
+                                                colourConfigBg,
+                                                colourConfigDarkBg,
+                                                colourConfigDarkFgText,
+                                                colourConfigFgText, fontgridSm,
+                                                fontsNormal, marginUni)
 
 auBodyC , auBodyCDark :: CssClass
 auBodyC = cssClass "au-body"
@@ -17,7 +20,7 @@ auBodyCDark = cssClass "au-body--dark"
 
 bodyCss :: ColourConfig -> Css
 bodyCss c = do
-  toRefinement auBodyC ? do
+  toSelector auBodyC ? do
     backgroundColor (c ^. colourConfigBg . clayColorG)
     color (c ^. colourConfigFgText . clayColorG)
     fontgridSm
@@ -26,5 +29,5 @@ bodyCss c = do
     marginUni (px 0)
 
     toRefinement auBodyCDark & do
-      backgroundColor (c ^. colourConfigDarkBg . to clayColor)
-      color (c ^. colourConfigDarkFgText . to toClayColor)
+      backgroundColor (c ^. colourConfigDarkBg . clayColorG)
+      color (c ^. colourConfigDarkFgText . clayColorG)

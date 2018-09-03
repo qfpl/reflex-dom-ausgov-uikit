@@ -1,7 +1,8 @@
-module Reflex.DOM.AusGov.UiKit.Class (CssClass, cssClass, toRefinement) where
+module Reflex.DOM.AusGov.UiKit.Class (CssClass, cssClass, toRefinement, toSelector) where
 
-import           Clay      (Selector, byClass)
-import           Data.Text (Text)
+import           Clay          (Refinement, Selector, byClass, star)
+import           Clay.Selector (with)
+import           Data.Text     (Text)
 
 newtype CssClass = CssClass Text
 
@@ -9,4 +10,7 @@ cssClass :: Text -> CssClass
 cssClass = CssClass
 
 toSelector :: CssClass -> Selector
-toSelector (CssClass t) = byClass t
+toSelector = with star . toRefinement
+
+toRefinement :: CssClass -> Refinement
+toRefinement (CssClass t) = byClass t
