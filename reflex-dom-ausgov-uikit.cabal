@@ -22,6 +22,7 @@ library
                    , clay
                    , colour
                    , lens
+                   , mtl
                    , reflex-dom
                    , reflex
                    , text
@@ -36,6 +37,7 @@ executable demoserver
                    , clay
                    , colour
                    , lens
+                   , mtl
                    , reflex-dom
                    , reflex
                    , text

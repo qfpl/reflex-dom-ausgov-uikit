@@ -5,46 +5,17 @@ module Reflex.DOM.AusGov.UiKit
   , css
   ) where
 
-import           Prelude                      hiding (rem)
+import           Prelude
 
-import           Clay
-import           Control.Lens                 (to, (^.))
-import           Control.Lens.TH              (makeLenses)
-import           Data.Colour.SRGB             (Colour, RGB (RGB), sRGB24read,
-                                               toSRGB24)
-import           Data.Semigroup               ((<>))
+import           Clay                             (Css)
+import           Control.Monad.Reader             (runReaderT)
 
-import           Reflex.DOM.AusGov.UiKit.Body (bodyCss)
-import           Reflex.DOM.AusGov.UiKit.Core (ColourConfig, clayColorG,
-                                               colourConfigBg,
-                                               colourConfigFgText,
-                                               defaultColourConfig,
-                                               fontgridMdNospace, fontsNormal,
-                                               marginUni, paddingUni, sronly)
+import           Reflex.DOM.AusGov.UiKit.Body     (bodyCss)
+import           Reflex.DOM.AusGov.UiKit.Core     (ColourConfig, defaultColourConfig)
+import           Reflex.DOM.AusGov.UiKit.SkipLink (skipLinkCss)
 
 -- TODO: Print CSS
 -- TODO: ReaderT Config
 
 css :: ColourConfig -> Css
-css c = do
-  bodyCss c
-  ".au-skip-link" ? do
-    fontgridMdNospace
-    uncurry fontFamily fontsNormal
-    color (c ^. colourConfigFgText . clayColorG)
-  ".au-skip-link__link" ? do
-      sronly
-      let linkStyle = do
-            clip auto
-            height auto
-            marginUni (px 0)
-            overflow visible
-            position absolute
-            width auto
-            color  (c ^. colourConfigBg . clayColorG)
-            backgroundColor  (c ^. colourConfigFgText . clayColorG)
-            top (rem 1)
-            left (rem 1)
-            paddingUni (rem 1.5)
-      hover & linkStyle
-      focus & linkStyle
+css c = flip runReaderT c . sequence_ $ [bodyCss, skipLinkCss]

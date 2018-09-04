@@ -2,44 +2,65 @@
 {-# LANGUAGE TemplateHaskell   #-}
 module Reflex.DOM.AusGov.UiKit.Core where
 
-import           Prelude          hiding (rem)
+import           Prelude              hiding (rem)
 
-import           Clay
-import           Control.Lens     (to, (^.), Getter)
-import           Control.Lens.TH  (makeLenses)
-import           Data.Colour.SRGB (Colour, RGB (RGB), sRGB24read, toSRGB24)
-import           Data.Text        (Text)
+import           Clay                 hiding (id)
+import           Clay.Stylesheet      (StyleM)
+import           Control.Lens         (Getter, to, (^.))
+import           Control.Lens.TH      (makeClassy)
+import           Control.Monad.Reader (ReaderT, lift)
+import           Data.Colour.SRGB     (Colour, RGB (RGB), sRGB24read, toSRGB24)
+import           Data.Text            (Text)
+
+class Monad m => HasCss m where
+  liftCss :: StyleM a -> m a
+
+instance HasCss StyleM where
+  liftCss = id
+
+instance HasCss m => HasCss (ReaderT c m) where
+  liftCss = lift . liftCss
+
+type UiKitStyleM c = ReaderT c StyleM
+type UiKitCss c    = UiKitStyleM c ()
+
+data ColourTheme = ColourTheme
+  { _colourThemeFgAction     :: Colour Double
+  , _colourThemeFgFocus      :: Colour Double
+  , _colourThemeFgText       :: Colour Double
+  , _colourThemeBg           :: Colour Double
+  }
+makeClassy ''ColourTheme
 
 data ColourConfig = ColourConfig
-  { _colourConfigFgAction     :: Colour Double
-  , _colourConfigFgFocus      :: Colour Double
-  , _colourConfigFgText       :: Colour Double
-  , _colourConfigBg           :: Colour Double
-  , _colourConfigDarkFgAction :: Colour Double
-  , _colourConfigDarkFgFocus  :: Colour Double
-  , _colourConfigDarkFgText   :: Colour Double
-  , _colourConfigDarkBg       :: Colour Double
+  { _colourConfigLightTheme   :: ColourTheme
+  , _colourConfigDarkTheme    :: ColourTheme
   , _colourConfigError        :: Colour Double
   , _colourConfigSuccess      :: Colour Double
   , _colourConfigWarning      :: Colour Double
   , _colourConfigInfo         :: Colour Double
   }
-makeLenses ''ColourConfig
+makeClassy ''ColourConfig
+
 
 defaultColourConfig :: ColourConfig
 defaultColourConfig = ColourConfig
-  { _colourConfigFgAction     = sRGB24read "00698F"
-  , _colourConfigFgFocus      = sRGB24read "9263DE"
-  , _colourConfigFgText       = sRGB24read "313131"
-  , _colourConfigBg           = sRGB24read "FFFFFF"
-  , _colourConfigDarkFgAction = sRGB24read "61DAFF"
-  , _colourConfigDarkFgFocus  = sRGB24read "C390F9"
-  , _colourConfigDarkFgText   = sRGB24read "FFFFFF"
-  , _colourConfigDarkBg       = sRGB24read "135E70"
-  , _colourConfigError        = sRGB24read "FF635C"
-  , _colourConfigSuccess      = sRGB24read "0CAC78"
-  , _colourConfigWarning      = sRGB24read "F69900"
-  , _colourConfigInfo         = sRGB24read "00BFE9"
+  { _colourConfigLightTheme = ColourTheme
+    { _colourThemeFgAction  = sRGB24read "00698F"
+    , _colourThemeFgFocus   = sRGB24read "9263DE"
+    , _colourThemeFgText    = sRGB24read "313131"
+    , _colourThemeBg        = sRGB24read "FFFFFF"
+    }
+  , _colourConfigDarkTheme = ColourTheme
+    { _colourThemeFgAction = sRGB24read "61DAFF"
+    , _colourThemeFgFocus  = sRGB24read "C390F9"
+    , _colourThemeFgText   = sRGB24read "FFFFFF"
+    , _colourThemeBg       = sRGB24read "135E70"
+    }
+  , _colourConfigError   = sRGB24read "FF635C"
+  , _colourConfigSuccess = sRGB24read "0CAC78"
+  , _colourConfigWarning = sRGB24read "F69900"
+  , _colourConfigInfo    = sRGB24read "00BFE9"
   }
 
 clayColorG :: (RealFrac a, Floating a) => Getter (Colour a) Color
